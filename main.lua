@@ -1,4 +1,4 @@
--- Alajmi Hub v9.0 | Ultimate HD Admin Edition
+-- Alajmi Hub v9.1 | Ultimate HD Admin Edition (Bug Fixes)
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -256,31 +256,34 @@ Pages["أوامر الأدمن"].Btn.TextColor3 = Color3.fromRGB(15, 15, 20)
 local targetPlayer = ""
 AddInput(AdminPage, "اكتب اسم اللاعب المستهدف...", function(txt) targetPlayer = txt end)
 
+local function GetPlayer(name)
+    for _, v in pairs(Players:GetPlayers()) do
+        if string.sub(string.lower(v.Name), 1, #name) == string.lower(name) or string.sub(string.lower(v.DisplayName), 1, #name) == string.lower(name) then
+            return v
+        end
+    end
+    return nil
+end
+
 AddButton(AdminPage, "🚀 الانتقال إلى اللاعب (Goto)", function()
-    local target = Players:FindFirstChild(targetPlayer)
+    local target = GetPlayer(targetPlayer)
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
         Players.LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
     end
 end)
 
-AddButton(AdminPage, "🧲 سحب اللاعب إليك (Bring)", function()
-    local target = Players:FindFirstChild(targetPlayer)
-    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-        target.Character.HumanoidRootPart.CFrame = Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -4)
-    end
-end)
-
-AddButton(AdminPage, "💀 قتل اللاعب (Kill)", function()
-    local target = Players:FindFirstChild(targetPlayer)
-    if target and target.Character and target.Character:FindFirstChild("Humanoid") then
-        target.Character.Humanoid.Health = 0
+AddButton(AdminPage, "💀 إعادة الترسيب / القتل المحالي (Reset/Kill)", function()
+    if Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+        Players.LocalPlayer.Character.Humanoid.Health = 0
     end
 end)
 
 local Frozen = false
 AddButton(AdminPage, "❄️ تجميد/إلغاء تجميد النفس (Freeze)", function()
     Frozen = not Frozen
-    Players.LocalPlayer.Character.HumanoidRootPart.Anchored = Frozen
+    if Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        Players.LocalPlayer.Character.HumanoidRootPart.Anchored = Frozen
+    end
 end)
 
 AddButton(AdminPage, "👻 الاختفاء الكامل (Invisibility)", function()
@@ -310,12 +313,17 @@ end)
 -- === 2. الحركة والطيران ===
 local Flying = false
 local FlySpeed = 50
+local FlyConnection = nil
+
 AddButton(MovePage, "🕊️ تفعيل / إيقاف الطيران (Fly)", function()
     Flying = not Flying
     local LP = Players.LocalPlayer
     local Mouse = LP:GetMouse()
+    
     if Flying then
-        local T = LP.Character.HumanoidRootPart
+        local T = LP.Character:FindFirstChild("HumanoidRootPart")
+        if not T then return end
+        
         local BG = Instance.new("BodyGyro", T)
         local BV = Instance.new("BodyVelocity", T)
         BG.P = 9e4
@@ -323,16 +331,27 @@ AddButton(MovePage, "🕊️ تفعيل / إيقاف الطيران (Fly)", func
         BG.cframe = T.CFrame
         BV.velocity = Vector3.new(0, 0.1, 0)
         BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
-        spawn(function()
-            repeat wait()
-                LP.Character.Humanoid.PlatformStand = true
+        
+        LP.Character.Humanoid.PlatformStand = true
+        
+        FlyConnection = RunService.RenderStepped:Connect(function()
+            if Flying and T and LP.Character:FindFirstChild("Humanoid") then
                 BV.velocity = Mouse.Hit.lookVector * FlySpeed
                 BG.cframe = CFrame.new(T.Position, Mouse.Hit.p)
-            until not Flying
-            BG:Destroy()
-            BV:Destroy()
-            LP.Character.Humanoid.PlatformStand = false
+            else
+                if FlyConnection then FlyConnection:Disconnect() end
+                BG:Destroy()
+                BV:Destroy()
+                if LP.Character:FindFirstChild("Humanoid") then
+                    LP.Character.Humanoid.PlatformStand = false
+                end
+            end
         end)
+    else
+        if FlyConnection then FlyConnection:Disconnect() end
+        if LP.Character and LP.Character:FindFirstChild("Humanoid") then
+            LP.Character.Humanoid.PlatformStand = false
+        end
     end
 end)
 
@@ -391,15 +410,15 @@ AddButton(VisualPage, "🛡️ درع الخلود (God Mode)", function()
 end)
 
 -- === 4. أوامر المرح والتعديل ===
-AddInput(MovePage, "تكبير / تصغير الشخصية (Scale 1-5)...", function(txt)
+AddInput(FunPage, "تكبير / تصغير الشخصية (Scale 1-5)...", function(txt)
     local scale = tonumber(txt)
     if scale and Players.LocalPlayer.Character then
         local hum = Players.LocalPlayer.Character:FindFirstChild("Humanoid")
         if hum then
             pcall(function()
-                hum.BodyHeightScale.Value = scale
-                hum.BodyWidthScale.Value = scale
-                hum.BodyDepthScale.Value = scale
+                if hum:FindFirstChild("BodyHeightScale") then hum.BodyHeightScale.Value = scale end
+                if hum:FindFirstChild("BodyWidthScale") then hum.BodyWidthScale.Value = scale end
+                if hum:FindFirstChild("BodyDepthScale") then hum.BodyDepthScale.Value = scale end
             end)
         end
     end
