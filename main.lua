@@ -1,4 +1,4 @@
--- Alajmi Hub v12.1 | Clean Name Edition
+-- ALAJMI HUB v12.2 | Fixed Speed & Jump Controls
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -221,6 +221,7 @@ local function AddButton(parent, text, callback)
     Corner.Parent = Btn
 
     Btn.MouseButton1Click:Connect(function() pcall(callback) end)
+    return Btn
 end
 
 local function AddInput(parent, placeholder, callback)
@@ -243,6 +244,7 @@ local function AddInput(parent, placeholder, callback)
             pcall(function() callback(Box.Text) end)
         end
     end)
+    return Box
 end
 
 -- ==================== 3. الأقسام والأوامر ====================
@@ -279,33 +281,76 @@ AddButton(AdminPage, "💀 إعادة ظهور (Reset)", function()
     end
 end)
 
--- === 2. التحكم بالسرعة المباشر والقفز ===
-AddInput(MovePage, "⚡ حدد السرعة (اكتب أي رقم مثل 500)...", function(txt)
-    local speed = tonumber(txt)
-    if speed then
-        task.spawn(function()
-            while task.wait(0.1) do
-                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                    LocalPlayer.Character.Humanoid.WalkSpeed = speed
-                end
+-- === 2. التحكم بالسرعة المباشر والقفز المطور ===
+local SpeedValue = 16
+local SpeedEnabled = false
+local JumpValue = 50
+local JumpEnabled = false
+
+AddInput(MovePage, "⚡ حدد قيمة السرعة (مثال: 500)...", function(txt)
+    local s = tonumber(txt)
+    if s then SpeedValue = s end
+end)
+
+local SpeedToggleBtn
+SpeedToggleBtn = AddButton(MovePage, "🔴 تشغيل السرعة [إيقاف]", function()
+    SpeedEnabled = not SpeedEnabled
+    if SpeedEnabled then
+        SpeedToggleBtn.Text = "🟢 إيقاف السرعة [شغال]"
+        SpeedToggleBtn.BackgroundColor3 = Color3.fromRGB(40, 140, 60)
+    else
+        SpeedToggleBtn.Text = "🔴 تشغيل السرعة [إيقاف]"
+        SpeedToggleBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 40)
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end
+end)
+
+AddInput(MovePage, "🚀 حدد قيمة القفز (مثال: 200)...", function(txt)
+    local j = tonumber(txt)
+    if j then JumpValue = j end
+end)
+
+local JumpToggleBtn
+JumpToggleBtn = AddButton(MovePage, "🔴 تشغيل القفز [إيقاف]", function()
+    JumpEnabled = not JumpEnabled
+    if JumpEnabled then
+        JumpToggleBtn.Text = "🟢 إيقاف القفز [شغال]"
+        JumpToggleBtn.BackgroundColor3 = Color3.fromRGB(40, 140, 60)
+    else
+        JumpToggleBtn.Text = "🔴 تشغيل القفز [إيقاف]"
+        JumpToggleBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 40)
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid.JumpPower = 50
+            LocalPlayer.Character.Humanoid.JumpHeight = 7.2
+        end
+    end
+end)
+
+-- حلقة تكرار تضمن عمل السرعة والقفز بدون أن تكتشفها بعض الألعاب أو تفصلها
+RunService.Stepped:Connect(function()
+    pcall(function()
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            local hum = LocalPlayer.Character.Humanoid
+            if SpeedEnabled then
+                hum.WalkSpeed = SpeedValue
             end
-        end)
-    end
+            if JumpEnabled then
+                hum.UseJumpPower = true
+                hum.JumpPower = JumpValue
+                hum.JumpHeight = JumpValue
+            end
+        end
+    end)
 end)
 
-AddInput(MovePage, "🚀 حدد قوة القفز (مثل 200)...", function(txt)
-    local jump = tonumber(txt)
-    if jump and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid.UseJumpPower = true
-        LocalPlayer.Character.Humanoid.JumpPower = jump
-    end
-end)
-
+-- الطيران والقفز اللانهائي
 local Flying = false
 local FlySpeed = 50
 local FlyConnection = nil
 
-AddInput(MovePage, "🕊️ سرعة الطيران (مثل 300)...", function(txt)
+AddInput(MovePage, "🕊️ سرعة الطيران (مثال: 300)...", function(txt)
     local s = tonumber(txt)
     if s then FlySpeed = s end
 end)
@@ -352,9 +397,17 @@ UserInputService.JumpRequest:Connect(function()
 end)
 
 AddButton(MovePage, "🛑 إعادة السرعة والقفز للافتراضي", function()
+    SpeedEnabled = false
+    JumpEnabled = false
+    SpeedToggleBtn.Text = "🔴 تشغيل السرعة [إيقاف]"
+    SpeedToggleBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 40)
+    JumpToggleBtn.Text = "🔴 تشغيل القفز [إيقاف]"
+    JumpToggleBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 40)
+    
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.WalkSpeed = 16
         LocalPlayer.Character.Humanoid.JumpPower = 50
+        LocalPlayer.Character.Humanoid.JumpHeight = 7.2
     end
 end)
 
