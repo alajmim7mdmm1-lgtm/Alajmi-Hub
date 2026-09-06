@@ -9,7 +9,6 @@ local LocalPlayer = Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AlajmiHubV12_Clean"
 
--- حماية حشو السكربت في الواجهة
 local success, _ = pcall(function()
     ScreenGui.Parent = game:GetService("CoreGui")
 end)
@@ -17,7 +16,7 @@ if not success then
     ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- ==================== 1. شاشة التحميل ====================
+-- 1. شاشة التحميل
 local IntroFrame = Instance.new("Frame")
 IntroFrame.Size = UDim2.new(1, 0, 1, 0)
 IntroFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
@@ -48,7 +47,7 @@ IntroUser.TextSize = 20
 IntroUser.Font = Enum.Font.GothamMedium
 IntroUser.TextTransparency = 1
 
--- ==================== 2. الواجهة الرئيسية ====================
+-- 2. الواجهة الرئيسية
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 620, 0, 420)
@@ -70,7 +69,6 @@ MainStroke.Color = Color3.fromRGB(255, 215, 0)
 MainStroke.Transparency = 0.3
 MainStroke.Parent = MainFrame
 
--- شريط العنوان العلوي
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 45)
 TopBar.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
@@ -106,7 +104,6 @@ local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(1, 0)
 CloseCorner.Parent = CloseBtn
 
--- القائمة الجانبية
 local Sidebar = Instance.new("Frame")
 Sidebar.Size = UDim2.new(0, 160, 1, -45)
 Sidebar.Position = UDim2.new(0, 0, 0, 45)
@@ -179,7 +176,6 @@ local function CreateTab(name, icon)
     return PageScroll
 end
 
--- الزر العائم
 local ToggleBtn = Instance.new("TextButton")
 ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
 ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
@@ -205,7 +201,6 @@ ToggleStroke.Parent = ToggleBtn
 ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
 CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false end)
 
--- أزرار ومربعات الإدخال
 local function AddButton(parent, text, callback)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, 0, 0, 34)
@@ -247,7 +242,7 @@ local function AddInput(parent, placeholder, callback)
     return Box
 end
 
--- ==================== 3. الأقسام والأوامر ====================
+-- 3. الأقسام والأوامر
 local AdminPage = CreateTab("أدوات الأدمن", "🛡️")
 local MovePage = CreateTab("الحركة والطيران", "⚡")
 local VisualPage = CreateTab("الكشف والرؤية", "👁️")
@@ -267,7 +262,7 @@ local function GetPlayer(name)
     return nil
 end
 
--- === 1. أدوات الأدمن ===
+-- أدوات الأدمن
 AddInput(AdminPage, "اكتب اسم اللاعب المستهدف...", function(txt) targetPlayer = txt end)
 AddButton(AdminPage, "🚀 الانتقال إلى اللاعب (Goto)", function()
     local target = GetPlayer(targetPlayer)
@@ -281,7 +276,7 @@ AddButton(AdminPage, "💀 إعادة ظهور (Reset)", function()
     end
 end)
 
--- === 2. التحكم بالسرعة المباشر والقفز المطور ===
+-- الحركة والسرعة والقفز المطور
 local SpeedValue = 16
 local SpeedEnabled = false
 local JumpValue = 50
@@ -328,7 +323,6 @@ JumpToggleBtn = AddButton(MovePage, "🔴 تشغيل القفز [إيقاف]", f
     end
 end)
 
--- حلقة تكرار تضمن عمل السرعة والقفز بدون أن تكتشفها بعض الألعاب أو تفصلها
 RunService.Stepped:Connect(function()
     pcall(function()
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -345,7 +339,6 @@ RunService.Stepped:Connect(function()
     end)
 end)
 
--- الطيران والقفز اللانهائي
 local Flying = false
 local FlySpeed = 50
 local FlyConnection = nil
@@ -411,7 +404,7 @@ AddButton(MovePage, "🛑 إعادة السرعة والقفز للافتراض�
     end
 end)
 
--- === 3. الكشف والرؤية ===
+-- الكشف والرؤية
 local Noclip = false
 AddButton(VisualPage, "👻 اختراق الجدران (Noclip)", function() Noclip = not Noclip end)
 RunService.Stepped:Connect(function()
@@ -439,7 +432,7 @@ AddButton(VisualPage, "💡 إضاءة الماب (Fullbright)", function()
     Lighting.GlobalShadows = false
 end)
 
--- === 4. تعديل الشخصية ===
+-- تعديل الشخصية
 AddInput(FunPage, "🛠️ حجم الشخصية (1-5)...", function(txt)
     local scale = tonumber(txt)
     if scale and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -460,7 +453,7 @@ AddButton(FunPage, "🛠️ الحصول على أدوات البناء (Btools)
     end
 end)
 
--- ==================== 4. تشغيل التحميل بوضوح ====================
+-- 4. تشغيل التحميل
 task.spawn(function()
     TweenService:Create(IntroTitle, TweenInfo.new(1), {TextTransparency = 0}):Play()
     TweenService:Create(IntroUser, TweenInfo.new(1), {TextTransparency = 0}):Play()
