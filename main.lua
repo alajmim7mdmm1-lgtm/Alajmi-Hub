@@ -1,4 +1,4 @@
--- Alajmi Hub v7.1 | المطور العجمي (Clean Intro - 5 Seconds)
+-- Alajmi Hub v7.2 | المطور العجمي (Fixed Intro & Mobile Optimized)
 local ScreenGui = Instance.new("ScreenGui")
 local BlackIntro = Instance.new("Frame")
 local IntroText = Instance.new("TextLabel")
@@ -11,14 +11,14 @@ local UIListLayout = Instance.new("UIListLayout")
 local OpenBtn = Instance.new("TextButton")
 
 ScreenGui.Parent = game:GetService("CoreGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.Name = "AlajmiHubV7_CleanIntro"
+ScreenGui.Name = "AlajmiHubV7_Fixed"
 
--- ==================== 1. شاشة البداية (الشاشة السوداء والنصوص فقط) ====================
+-- ==================== 1. شاشة البداية (الشاشة السوداء والنصوص) ====================
 BlackIntro.Name = "BlackIntro"
 BlackIntro.Parent = ScreenGui
 BlackIntro.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 BlackIntro.Size = UDim2.new(1, 0, 1, 0)
-BlackIntro.ZIndex = 10
+BlackIntro.ZIndex = 100
 
 IntroText.Parent = BlackIntro
 IntroText.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -29,7 +29,6 @@ IntroText.Text = "ALAJMI"
 IntroText.TextColor3 = Color3.fromRGB(255, 255, 255)
 IntroText.TextSize = 42
 IntroText.Font = Enum.Font.SourceSansBold
-IntroText.TextTransparency = 1
 
 IntroSubText.Parent = BlackIntro
 IntroSubText.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -40,7 +39,6 @@ IntroSubText.Text = "by Alajmi"
 IntroSubText.TextColor3 = Color3.fromRGB(180, 180, 180)
 IntroSubText.TextSize = 18
 IntroSubText.Font = Enum.Font.SourceSansItalic
-IntroSubText.TextTransparency = 1
 
 -- ==================== 2. نافذة التأكيد الترحيبية ====================
 PromptFrame.Name = "PromptFrame"
@@ -343,21 +341,9 @@ CreateButton("🔄 إعادة الظهور (Reset)", Color3.fromRGB(100, 30, 30)
     game.Players.LocalPlayer.Character.Humanoid.Health = 0
 end)
 
--- ==================== 5. انيميشن التلاشي 5 ثوانٍ ====================
+-- ==================== 5. مؤقت الانتهاء (5 ثوانٍ مضافة بدقة) ====================
 task.spawn(function()
-    local TweenService = game:GetService("TweenService")
-    
-    -- ظهور النص التدريجي
-    TweenService:Create(IntroText, TweenInfo.new(1.5), {TextTransparency = 0}):Play()
-    TweenService:Create(IntroSubText, TweenInfo.new(1.5), {TextTransparency = 0}):Play()
-    task.wait(2.5)
-
-    -- اختفاء الشاشة السوداء والنصوص تدريجياً
-    TweenService:Create(IntroText, TweenInfo.new(1), {TextTransparency = 1}):Play()
-    TweenService:Create(IntroSubText, TweenInfo.new(1), {TextTransparency = 1}):Play()
-    TweenService:Create(BlackIntro, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
-    task.wait(1)
-
-    BlackIntro.Visible = false
-    PromptFrame.Visible = true
+    task.wait(5)
+    BlackIntro:Destroy() -- مسح الشاشة السوداء نهائياً بعد 5 ثوانٍ
+    PromptFrame.Visible = true -- إظهار نافذة الفتح مباشرة
 end)
