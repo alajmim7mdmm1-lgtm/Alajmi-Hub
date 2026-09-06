@@ -1,5 +1,8 @@
--- Alajmi Hub v5.0 | المطور العجمي (Luxury UI & Prompt)
+-- Alajmi Hub v7.1 | المطور العجمي (Clean Intro - 5 Seconds)
 local ScreenGui = Instance.new("ScreenGui")
+local BlackIntro = Instance.new("Frame")
+local IntroText = Instance.new("TextLabel")
+local IntroSubText = Instance.new("TextLabel")
 local PromptFrame = Instance.new("Frame")
 local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
@@ -7,11 +10,39 @@ local Scroll = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
 local OpenBtn = Instance.new("TextButton")
 
--- إعدادات الشاشة الأساسية
 ScreenGui.Parent = game:GetService("CoreGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.Name = "AlajmiHubV5_Luxury"
+ScreenGui.Name = "AlajmiHubV7_CleanIntro"
 
--- ==================== 1. نافذة التأكيد الترحيبية ====================
+-- ==================== 1. شاشة البداية (الشاشة السوداء والنصوص فقط) ====================
+BlackIntro.Name = "BlackIntro"
+BlackIntro.Parent = ScreenGui
+BlackIntro.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+BlackIntro.Size = UDim2.new(1, 0, 1, 0)
+BlackIntro.ZIndex = 10
+
+IntroText.Parent = BlackIntro
+IntroText.AnchorPoint = Vector2.new(0.5, 0.5)
+IntroText.Position = UDim2.new(0.5, 0, 0.45, 0)
+IntroText.Size = UDim2.new(0, 300, 0, 60)
+IntroText.BackgroundTransparency = 1
+IntroText.Text = "ALAJMI"
+IntroText.TextColor3 = Color3.fromRGB(255, 255, 255)
+IntroText.TextSize = 42
+IntroText.Font = Enum.Font.SourceSansBold
+IntroText.TextTransparency = 1
+
+IntroSubText.Parent = BlackIntro
+IntroSubText.AnchorPoint = Vector2.new(0.5, 0.5)
+IntroSubText.Position = UDim2.new(0.5, 0, 0.53, 0)
+IntroSubText.Size = UDim2.new(0, 200, 0, 30)
+IntroSubText.BackgroundTransparency = 1
+IntroSubText.Text = "by Alajmi"
+IntroSubText.TextColor3 = Color3.fromRGB(180, 180, 180)
+IntroSubText.TextSize = 18
+IntroSubText.Font = Enum.Font.SourceSansItalic
+IntroSubText.TextTransparency = 1
+
+-- ==================== 2. نافذة التأكيد الترحيبية ====================
 PromptFrame.Name = "PromptFrame"
 PromptFrame.Parent = ScreenGui
 PromptFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
@@ -19,6 +50,7 @@ PromptFrame.Position = UDim2.new(0.5, -150, 0.4, -75)
 PromptFrame.Size = UDim2.new(0, 300, 0, 150)
 PromptFrame.Active = true
 PromptFrame.Draggable = true
+PromptFrame.Visible = false
 
 local PromptCorner = Instance.new("UICorner")
 PromptCorner.CornerRadius = UDim.new(0, 12)
@@ -28,12 +60,12 @@ local PromptTitle = Instance.new("TextLabel")
 PromptTitle.Parent = PromptFrame
 PromptTitle.Size = UDim2.new(1, 0, 0, 45)
 PromptTitle.BackgroundTransparency = 1
-PromptTitle.Text = "⚡ Alajmi Hub v5.0"
+PromptTitle.Text = "⚡ Alajmi Hub"
 PromptTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
 PromptTitle.TextSize = 18
 PromptTitle.Font = Enum.Font.SourceSansBold
 
-PromptText = Instance.new("TextLabel")
+local PromptText = Instance.new("TextLabel")
 PromptText.Parent = PromptFrame
 PromptText.Position = UDim2.new(0, 10, 0, 45)
 PromptText.Size = UDim2.new(1, -20, 0, 40)
@@ -71,8 +103,7 @@ local NoCorner = Instance.new("UICorner")
 NoCorner.CornerRadius = UDim.new(0, 8)
 NoCorner.Parent = NoBtn
 
--- ==================== 2. الواجهة الرئيسية والزر ====================
-
+-- ==================== 3. الواجهة الرئيسية والزر ====================
 OpenBtn.Name = "OpenBtn"
 OpenBtn.Parent = ScreenGui
 OpenBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
@@ -107,7 +138,7 @@ MainCorner.Parent = MainFrame
 Title.Parent = MainFrame
 Title.Size = UDim2.new(1, 0, 0, 45)
 Title.BackgroundColor3 = Color3.fromRGB(26, 26, 38)
-Title.Text = "👑 Alajmi Hub v5.0 | المطور العجمي"
+Title.Text = "👑 Alajmi Hub | المطور العجمي"
 Title.TextColor3 = Color3.fromRGB(255, 215, 0)
 Title.TextSize = 16
 Title.Font = Enum.Font.SourceSansBold
@@ -116,7 +147,6 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 12)
 TitleCorner.Parent = Title
 
--- أزرار فتح وإغلاق الواجهة
 YesBtn.MouseButton1Click:Connect(function()
     PromptFrame.Visible = false
     MainFrame.Visible = true
@@ -135,14 +165,13 @@ Scroll.Parent = MainFrame
 Scroll.Position = UDim2.new(0, 8, 0, 50)
 Scroll.Size = UDim2.new(1, -16, 1, -55)
 Scroll.BackgroundTransparency = 1
-Scroll.CanvasSize = UDim2.new(0, 0, 4.2, 0)
+Scroll.CanvasSize = UDim2.new(0, 0, 4.5, 0)
 Scroll.ScrollBarThickness = 4
 
 UIListLayout.Parent = Scroll
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Padding = UDim.new(0, 8)
 
--- دالة العناوين الفرعية
 local function CreateHeader(text)
     local header = Instance.new("TextLabel")
     header.Parent = Scroll
@@ -154,7 +183,6 @@ local function CreateHeader(text)
     header.TextSize = 14
 end
 
--- دالة الأزرار الأنيقة
 local function CreateButton(text, color, callback)
     local btn = Instance.new("TextButton")
     btn.Parent = Scroll
@@ -175,7 +203,6 @@ local function CreateButton(text, color, callback)
     return btn
 end
 
--- دالة الإدخال
 local function CreateTextBox(placeholder, callback)
     local box = Instance.new("TextBox")
     box.Parent = Scroll
@@ -197,8 +224,7 @@ local function CreateTextBox(placeholder, callback)
     return box
 end
 
--- ==================== 3. الأوامر المدمجة ====================
-
+-- ==================== 4. الوظائف والأوامر ====================
 CreateHeader("نظام الانتقال السريع (TP)")
 
 local SavedCFrame = nil
@@ -221,37 +247,33 @@ CreateButton("🚀 الانتقال للمكان المحفوظ", Color3.fromRGB
     end
 end)
 
-CreateHeader("التحكم بالحركة والفيزياء")
+CreateHeader("التحكم المخصص بالحركة")
 
-CreateButton("⚡ سرعة فائقة (Speed 120)", Color3.fromRGB(38, 38, 55), function()
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 120
+CreateTextBox("اكتب رقم السرعة المطلوب (مثال: 50)...", function(txt)
+    local num = tonumber(txt)
+    if num then game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = num end
 end)
 
-CreateButton("🏃‍♂️ سرعة متوسطة (Speed 50)", Color3.fromRGB(38, 38, 55), function()
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
+CreateTextBox("اكتب رقم قوة القفز المطلوب (مثال: 100)...", function(txt)
+    local num = tonumber(txt)
+    if num then
+        local hum = game.Players.LocalPlayer.Character.Humanoid
+        hum.UseJumpPower = true
+        hum.JumpPower = num
+    end
 end)
 
-CreateButton("🔄 السرعة الطبيعية (Speed 16)", Color3.fromRGB(38, 38, 55), function()
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+CreateButton("🔄 إرجاع السرعة والقفز للطبيعي", Color3.fromRGB(38, 38, 55), function()
+    local hum = game.Players.LocalPlayer.Character.Humanoid
+    hum.WalkSpeed = 16
+    hum.JumpPower = 50
 end)
 
-CreateButton("🦘 قفز عالي (Jump 150)", Color3.fromRGB(38, 38, 55), function()
-    game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
-    game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150
-end)
-
-CreateButton("🌌 جاذبية منخفضة (طفو)", Color3.fromRGB(38, 38, 55), function()
-    game.Workspace.Gravity = 50
-end)
-
-CreateButton("🌍 إعادة الجاذبية الطبيعية", Color3.fromRGB(38, 38, 55), function()
-    game.Workspace.Gravity = 196.2
-end)
+CreateButton("🌌 جاذبية منخفضة (طفو)", Color3.fromRGB(38, 38, 55), function() game.Workspace.Gravity = 50 end)
+CreateButton("🌍 إعادة الجاذبية الطبيعية", Color3.fromRGB(38, 38, 55), function() game.Workspace.Gravity = 196.2 end)
 
 local InfJump = false
-CreateButton("🔄 تفعيل/إلغاء القفز اللانهائي", Color3.fromRGB(50, 40, 70), function()
-    InfJump = not InfJump
-end)
+CreateButton("🔄 تفعيل/إلغاء القفز اللانهائي", Color3.fromRGB(50, 40, 70), function() InfJump = not InfJump end)
 game:GetService("UserInputService").JumpRequest:Connect(function()
     if InfJump then pcall(function() game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping") end) end
 end)
@@ -259,9 +281,7 @@ end)
 CreateHeader("الكشف والشفافية")
 
 local Noclip = false
-CreateButton("👻 اختراق الجدران (Noclip)", Color3.fromRGB(60, 35, 75), function()
-    Noclip = not Noclip
-end)
+CreateButton("👻 اختراق الجدران (Noclip)", Color3.fromRGB(60, 35, 75), function() Noclip = not Noclip end)
 game:GetService("RunService").Stepped:Connect(function()
     if Noclip and game.Players.LocalPlayer.Character then
         for _, part in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
@@ -285,7 +305,7 @@ CreateHeader("تعديل السكن والاسم")
 local targetUser = ""
 CreateTextBox("اكتب اسم اللاعب لنسخ سكنه...", function(txt) targetUser = txt end)
 
-CreateButton("✨ نسخ السكن Mip", Color3.fromRGB(30, 65, 50), function()
+CreateButton("✨ نسخ السكن", Color3.fromRGB(30, 65, 50), function()
     local userId = game.Players:GetUserIdFromNameAsync(targetUser)
     if userId then
         local desc = game.Players:GetHumanoidDescriptionFromUserId(userId)
@@ -314,16 +334,30 @@ CreateButton("💡 إزالة الضباب وضبط الرؤية", Color3.fromRG
     game.Lighting.GlobalShadows = false
 end)
 
-CreateButton("📷 زاوية رؤية واسعة (Max FOV)", Color3.fromRGB(45, 50, 70), function()
-    game.Workspace.CurrentCamera.FieldOfView = 120
-end)
-
-CreateButton("📷 زاوية رؤية طبيعية (Normal FOV)", Color3.fromRGB(45, 50, 70), function()
-    game.Workspace.CurrentCamera.FieldOfView = 70
-end)
+CreateButton("📷 زاوية رؤية واسعة (Max FOV)", Color3.fromRGB(45, 50, 70), function() game.Workspace.CurrentCamera.FieldOfView = 120 end)
+CreateButton("📷 زاوية رؤية طبيعية (Normal FOV)", Color3.fromRGB(45, 50, 70), function() game.Workspace.CurrentCamera.FieldOfView = 70 end)
 
 CreateHeader("خيارات عامة")
 
 CreateButton("🔄 إعادة الظهور (Reset)", Color3.fromRGB(100, 30, 30), function()
     game.Players.LocalPlayer.Character.Humanoid.Health = 0
+end)
+
+-- ==================== 5. انيميشن التلاشي 5 ثوانٍ ====================
+task.spawn(function()
+    local TweenService = game:GetService("TweenService")
+    
+    -- ظهور النص التدريجي
+    TweenService:Create(IntroText, TweenInfo.new(1.5), {TextTransparency = 0}):Play()
+    TweenService:Create(IntroSubText, TweenInfo.new(1.5), {TextTransparency = 0}):Play()
+    task.wait(2.5)
+
+    -- اختفاء الشاشة السوداء والنصوص تدريجياً
+    TweenService:Create(IntroText, TweenInfo.new(1), {TextTransparency = 1}):Play()
+    TweenService:Create(IntroSubText, TweenInfo.new(1), {TextTransparency = 1}):Play()
+    TweenService:Create(BlackIntro, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
+    task.wait(1)
+
+    BlackIntro.Visible = false
+    PromptFrame.Visible = true
 end)
