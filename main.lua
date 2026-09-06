@@ -1,131 +1,80 @@
--- تحميل مكتبة Fluent
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+-- Alajmi Hub v4.0 | المطور العجمي
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/zxciaz/Kavo-UI-Library/main/AvailbleCodes-Kavo-UI"))()
+local Window = Library.CreateLib("⚡ Alajmi Hub v4.0 | المطور العجمي", "Midnight")
 
-local Window = Fluent:CreateWindow({
-    Title = "⚡ Alajmi Hub v3.0 Ultimate",
-    SubTitle = "by Alajmi",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(580, 380),
-    Theme = "Dark"
-})
+-- ==================== التبويبات ====================
+local TabPlayer = Window:NewTab("اللاعب والحركة 🏃‍♂️")
+local SecPlayer = TabPlayer:NewSection("التحكم بالشخصية")
 
-local Tabs = {
-    Main = Window:AddTab({ Title = "اللاعب والحركة 🏃‍♂️" }),
-    Skin = Window:AddTab({ Title = "تغيير السكن والاسم 🎭" }),
-    Visuals = Window:AddTab({ Title = "الكشف والرادار 👁️" }),
-    World = Window:AddTab({ Title = "العالم والبيئة 🌐" }),
-    Fun = Window:AddTab({ Title = "أوامر إضافية 🎯" })
-}
+local TabSkin = Window:NewTab("تغيير السكن والاسم 🎭")
+local SecSkin = TabSkin:NewSection("نسخ وتعديل المظهر")
 
--- ==================== 1. تبويب اللاعب والحركة ====================
-Tabs.Main:AddSlider("Speed", {
-    Title = "سرعة المشي",
-    Default = 16, Min = 16, Max = 500, Rounding = 0,
-    Callback = function(Value)
-        pcall(function() game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value end)
-    end
-})
+local TabESP = Window:NewTab("الكشف والرادار 👁️")
+local SecESP = TabESP:NewSection("أوامر الكشف")
 
-Tabs.Main:AddSlider("Jump", {
-    Title = "قوة القفز",
-    Default = 50, Min = 50, Max = 500, Rounding = 0,
-    Callback = function(Value)
-        pcall(function() 
-            game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value 
-        end)
-    end
-})
+local TabWorld = Window:NewTab("العالم والبيئة 🌐")
+local SecWorld = TabWorld:NewSection("الإضاءة والوقت")
 
-Tabs.Main:AddSlider("Gravity", {
-    Title = "الجاذبية (الطفو)",
-    Default = 196, Min = 0, Max = 196, Rounding = 0,
-    Callback = function(Value) game.Workspace.Gravity = Value end
-})
+local TabFun = Window:NewTab("أوامر مميزة 🎯")
+local SecFun = TabFun:NewSection("إضافات وتحكم")
+
+-- ==================== 1. أوامر الحركة ====================
+SecPlayer:NewSlider("سرعة المشي (Speed)", "تعديل السرعة", 300, 16, function(s)
+    pcall(function() game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s end)
+end)
+
+SecPlayer:NewSlider("قوة القفز (Jump)", "تعديل الارتفاع", 300, 50, function(s)
+    pcall(function() 
+        game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = s 
+    end)
+end)
+
+SecPlayer:NewSlider("الجاذبية (Gravity)", "التحكم بالطفو", 196, 0, function(s)
+    game.Workspace.Gravity = s
+end)
 
 local InfJump = false
-Tabs.Main:AddToggle("InfJump", {
-    Title = "القفز اللانهائي في الهواء",
-    Default = false,
-    Callback = function(Value) InfJump = Value end
-})
+SecPlayer:NewToggle("القفز اللانهائي في الهواء", "قفز بدون توقف", function(state)
+    InfJump = state
+end)
 game:GetService("UserInputService").JumpRequest:Connect(function()
     if InfJump then pcall(function() game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping") end) end
 end)
 
--- ==================== 2. تبويب تغيير السكن والاسم ====================
+-- ==================== 2. السكن والاسم ====================
 local TargetPlayerName = ""
 
-Tabs.Skin:AddInput("TargetPlayer", {
-    Title = "اسم اللاعب المراد نسخ سكنه",
-    Default = "",
-    Placeholder = "اكتب اسم الحساب هنا...",
-    Callback = function(Text) TargetPlayerName = Text end
-})
+SecSkin:NewTextBox("اسم الحساب (Username)", "اكتب اسم حساب اللاعب المُراد نسخ سكنه", function(txt)
+    TargetPlayerName = txt
+end)
 
-Tabs.Skin:AddButton({
-    Title = "نسخ سكن اللاعب (Copy Skin)",
-    Callback = function()
-        pcall(function()
-            local targetPlayer = game.Players:FindFirstChild(TargetPlayerName)
-            if targetPlayer and targetPlayer.Character then
-                local localChar = game.Players.LocalPlayer.Character
-                local description = game.Players:GetHumanoidDescriptionFromUserId(targetPlayer.UserId)
-                localChar.Humanoid:ApplyDescription(description)
-                Fluent:Notify({ Title = "Alajmi Hub", Content = "تم نسخ سكن اللاعب بنجاح!", Duration = 3 })
-            else
-                Fluent:Notify({ Title = "خطأ", Content = "لم يتم العثور على اللاعب!", Duration = 3 })
-            end
-        end)
-    end
-})
+SecSkin:NewButton("نسخ سكن اللاعب (Copy Skin)", "نسخ المظهر مباشر", function()
+    pcall(function()
+        local userId = game.Players:GetUserIdFromNameAsync(TargetPlayerName)
+        if userId then
+            local desc = game.Players:GetHumanoidDescriptionFromUserId(userId)
+            game.Players.LocalPlayer.Character.Humanoid:ApplyDescription(desc)
+        end
+    end)
+end)
 
-Tabs.Skin:AddInput("NewName", {
-    Title = "تغيير اسمك الوهمي (Fake Name)",
-    Default = "",
-    Placeholder = "اكتب الاسم الجديد...",
-    Callback = function(Text)
-        pcall(function()
-            local char = game.Players.LocalPlayer.Character
-            if char and char:FindFirstChild("Humanoid") then
-                char.Humanoid.DisplayName = Text
-                Fluent:Notify({ Title = "Alajmi Hub", Content = "تم تغيير الاسم بنجاح!", Duration = 3 })
-            end
-        end)
-    end
-})
+SecSkin:NewTextBox("تغيير الاسم الوهمي", "اكتب اسمك الجديد فوق رأسك", function(txt)
+    pcall(function() game.Players.LocalPlayer.Character.Humanoid.DisplayName = txt end)
+end)
 
-Tabs.Skin:AddButton({
-    Title = "تحويل السكن إلى شفاف (Invis Body)",
-    Callback = function()
-        pcall(function()
-            for _, part in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                    part.Transparency = 0.5
-                end
-            end
-        end)
-    end
-})
-
-Tabs.Skin:AddButton({
-    Title = "إعادة السكن للأصل",
-    Callback = function()
-        pcall(function()
-            local localPlayer = game.Players.LocalPlayer
-            local description = game.Players:GetHumanoidDescriptionFromUserId(localPlayer.UserId)
-            localPlayer.Character.Humanoid:ApplyDescription(description)
-        end)
-    end
-})
+SecSkin:NewButton("إعادة السكن الأصلي", "إرجاع سكنك الأساسي", function()
+    pcall(function()
+        local desc = game.Players:GetHumanoidDescriptionFromUserId(game.Players.LocalPlayer.UserId)
+        game.Players.LocalPlayer.Character.Humanoid:ApplyDescription(desc)
+    end)
+end)
 
 -- ==================== 3. الكشف والشفافية ====================
 local Noclip = false
-Tabs.Visuals:AddToggle("Noclip", {
-    Title = "اختراق الجدران (Noclip)",
-    Default = false,
-    Callback = function(Value) Noclip = Value end
-})
+SecESP:NewToggle("اختراق الجدران (Noclip)", "المرور من الجدران", function(state)
+    Noclip = state
+end)
 game:GetService("RunService").Stepped:Connect(function()
     if Noclip and game.Players.LocalPlayer.Character then
         for _, part in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
@@ -134,32 +83,34 @@ game:GetService("RunService").Stepped:Connect(function()
     end
 end)
 
-Tabs.Visuals:AddButton({
-    Title = "كشف أماكن اللاعبين (ESP)",
-    Callback = function()
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player ~= game.Players.LocalPlayer and player.Character and not player.Character:FindFirstChild("Highlight") then
-                local Highlight = Instance.new("Highlight")
-                Highlight.Parent = player.Character
-                Highlight.FillColor = Color3.fromRGB(255, 0, 0)
-            end
+SecESP:NewButton("كشف أماكن اللاعبين (ESP)", "إظهار ظلال جميع اللاعبين", function()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and player.Character and not player.Character:FindFirstChild("Highlight") then
+            local Highlight = Instance.new("Highlight")
+            Highlight.Parent = player.Character
+            Highlight.FillColor = Color3.fromRGB(138, 43, 226)
         end
     end
-})
+end)
 
--- ==================== 4. العالم والوقت ====================
-Tabs.World:AddButton({ Title = "تغيير الوقت إلى نهار ☀️", Callback = function() game.Lighting.ClockTime = 12 end })
-Tabs.World:AddButton({ Title = "تغيير الوقت إلى ليل 🌙", Callback = function() game.Lighting.ClockTime = 0 end })
-Tabs.World:AddButton({ Title = "إزالة الضباب والإضاءة القوية (Fullbright)", Callback = function() 
+-- ==================== 4. البيئة والوقت ====================
+SecWorld:NewButton("تحويل الوقت إلى نهار ☀️", "تغيير إضاءة اللعبة", function() game.Lighting.ClockTime = 12 end)
+SecWorld:NewButton("تحويل الوقت إلى ليل 🌙", "تغيير إضاءة اللعبة", function() game.Lighting.ClockTime = 0 end)
+SecWorld:NewButton("إزالة الضباب والإضاءة القوية (Fullbright)", "رؤية واضحة جداً", function()
     game.Lighting.Brightness = 2
     game.Lighting.ClockTime = 14
     game.Lighting.FogEnd = 100000
     game.Lighting.GlobalShadows = false
-end })
+end)
 
 -- ==================== 5. أوامر إضافية ====================
-Tabs.Fun:AddButton({ Title = "إعادة ترسبن الشخصية (Reset)", Callback = function() game.Players.LocalPlayer.Character.Humanoid.Health = 0 end })
-Tabs.Fun:AddButton({ Title = "تكبير زاوية الرؤية (Max FOV)", Callback = function() game.Workspace.CurrentCamera.FieldOfView = 120 end })
-Tabs.Fun:AddButton({ Title = "إعادة زاوية الرؤية للأصل (Normal FOV)", Callback = function() game.Workspace.CurrentCamera.FieldOfView = 70 end })
-
-Fluent:Notify({ Title = "Alajmi Hub v3.0", Content = "تم تحميل السكربت بنجاح!", Duration = 4 })
+SecFun:NewButton("إعادة الظهور (Reset)", "تجديد الشخصية والعودة لنقطة البداية", function() game.Players.LocalPlayer.Character.Humanoid.Health = 0 end)
+SecFun:NewButton("تكبير زاوية الرؤية (Max FOV)", "رؤية أوسع للماب", function() game.Workspace.CurrentCamera.FieldOfView = 120 end)
+SecFun:NewButton("إعادة زاوية الرؤية (Normal FOV)", "الزاوية الطبيعية", function() game.Workspace.CurrentCamera.FieldOfView = 70 end)
+SecFun:NewButton("إزالة الاكسسوارات", "حذف القبعات والأدوات من سكنك", function()
+    pcall(function()
+        for _, item in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+            if item:IsA("Accessory") then item:Destroy() end
+        end
+    end)
+end)
