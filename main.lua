@@ -1,4 +1,4 @@
--- Alajmi Hub v11.0 | Mega HD Admin Edition
+-- Alajmi Hub v12.1 | Clean Name Edition
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -7,41 +7,48 @@ local Lighting = game:GetService("Lighting")
 
 local LocalPlayer = Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.Name = "AlajmiHubV11_MegaAdmin"
+ScreenGui.Name = "AlajmiHubV12_Clean"
 
--- ==================== 1. أنيميشن الدخول ====================
+-- حماية حشو السكربت في الواجهة
+local success, _ = pcall(function()
+    ScreenGui.Parent = game:GetService("CoreGui")
+end)
+if not success then
+    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+end
+
+-- ==================== 1. شاشة التحميل ====================
 local IntroFrame = Instance.new("Frame")
 IntroFrame.Size = UDim2.new(1, 0, 1, 0)
-IntroFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
+IntroFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
 IntroFrame.ZIndex = 500
 IntroFrame.Parent = ScreenGui
 
 local IntroTitle = Instance.new("TextLabel")
 IntroTitle.Parent = IntroFrame
 IntroTitle.AnchorPoint = Vector2.new(0.5, 0.5)
-IntroTitle.Position = UDim2.new(0.5, 0, 0.45, 0)
-IntroTitle.Size = UDim2.new(0, 400, 0, 70)
+IntroTitle.Position = UDim2.new(0.5, 0, 0.43, 0)
+IntroTitle.Size = UDim2.new(0, 500, 0, 70)
 IntroTitle.BackgroundTransparency = 1
 IntroTitle.Text = "ALAJMI HUB"
 IntroTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
-IntroTitle.TextSize = 48
+IntroTitle.TextSize = 46
 IntroTitle.Font = Enum.Font.GothamBold
 IntroTitle.TextTransparency = 1
 
-local IntroSub = Instance.new("TextLabel")
-IntroSub.Parent = IntroFrame
-IntroSub.AnchorPoint = Vector2.new(0.5, 0.5)
-IntroSub.Position = UDim2.new(0.5, 0, 0.53, 0)
-IntroSub.Size = UDim2.new(0, 300, 0, 30)
-IntroSub.BackgroundTransparency = 1
-IntroSub.Text = "Mega HD Admin Edition • 50+ Commands"
-IntroSub.TextColor3 = Color3.fromRGB(180, 180, 200)
-IntroSub.TextSize = 16
-IntroSub.Font = Enum.Font.Gotham
-IntroSub.TextTransparency = 1
+local IntroUser = Instance.new("TextLabel")
+IntroUser.Parent = IntroFrame
+IntroUser.AnchorPoint = Vector2.new(0.5, 0.5)
+IntroUser.Position = UDim2.new(0.5, 0, 0.52, 0)
+IntroUser.Size = UDim2.new(0, 500, 0, 30)
+IntroUser.BackgroundTransparency = 1
+IntroUser.Text = "مرحباً بك: " .. LocalPlayer.Name
+IntroUser.TextColor3 = Color3.fromRGB(220, 220, 240)
+IntroUser.TextSize = 20
+IntroUser.Font = Enum.Font.GothamMedium
+IntroUser.TextTransparency = 1
 
--- ==================== 2. الواجهة الرئيسية الفاخرة ====================
+-- ==================== 2. الواجهة الرئيسية ====================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 620, 0, 420)
@@ -63,7 +70,7 @@ MainStroke.Color = Color3.fromRGB(255, 215, 0)
 MainStroke.Transparency = 0.3
 MainStroke.Parent = MainFrame
 
--- شريط العنوان (Top Bar) مع أيقونة "أي"
+-- شريط العنوان العلوي
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 45)
 TopBar.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
@@ -77,11 +84,11 @@ TopCorner.Parent = TopBar
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Parent = TopBar
 TitleLabel.Position = UDim2.new(0, 15, 0, 0)
-TitleLabel.Size = UDim2.new(0, 300, 1, 0)
+TitleLabel.Size = UDim2.new(0, 350, 1, 0)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "أي ALAJMI HUB (50+ Commands)"
+TitleLabel.Text = "👑 ALAJMI HUB | " .. LocalPlayer.Name
 TitleLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-TitleLabel.TextSize = 18
+TitleLabel.TextSize = 16
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -99,7 +106,7 @@ local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(1, 0)
 CloseCorner.Parent = CloseBtn
 
--- القائمة الجانبية (Sidebar)
+-- القائمة الجانبية
 local Sidebar = Instance.new("Frame")
 Sidebar.Size = UDim2.new(0, 160, 1, -45)
 Sidebar.Position = UDim2.new(0, 0, 0, 45)
@@ -117,7 +124,6 @@ SidePadding.PaddingLeft = UDim.new(0, 8)
 SidePadding.PaddingRight = UDim.new(0, 8)
 SidePadding.Parent = Sidebar
 
--- منطقة المحتوى
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Size = UDim2.new(1, -160, 1, -45)
 ContentFrame.Position = UDim2.new(0, 160, 0, 45)
@@ -173,12 +179,12 @@ local function CreateTab(name, icon)
     return PageScroll
 end
 
--- الزر العائم مع الكلمة "أي"
+-- الزر العائم
 local ToggleBtn = Instance.new("TextButton")
 ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
 ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
-ToggleBtn.Text = "أي"
+ToggleBtn.Text = "👑"
 ToggleBtn.TextColor3 = Color3.fromRGB(255, 215, 0)
 ToggleBtn.Font = Enum.Font.GothamBold
 ToggleBtn.TextSize = 22
@@ -199,7 +205,7 @@ ToggleStroke.Parent = ToggleBtn
 ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
 CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false end)
 
--- دمج أدوات إنشاء العناصر
+-- أزرار ومربعات الإدخال
 local function AddButton(parent, text, callback)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, 0, 0, 34)
@@ -232,16 +238,18 @@ local function AddInput(parent, placeholder, callback)
     Corner.CornerRadius = UDim.new(0, 6)
     Corner.Parent = Box
 
-    Box.FocusLost:Connect(function() pcall(function() callback(Box.Text) end) end)
+    Box.FocusLost:Connect(function()
+        if Box.Text ~= "" then
+            pcall(function() callback(Box.Text) end)
+        end
+    end)
 end
 
--- ==================== 3. أقسام الأوامر الـ 50+ ====================
+-- ==================== 3. الأقسام والأوامر ====================
 local AdminPage = CreateTab("أدوات الأدمن", "🛡️")
 local MovePage = CreateTab("الحركة والطيران", "⚡")
 local VisualPage = CreateTab("الكشف والرؤية", "👁️")
 local FunPage = CreateTab("تعديل الشخصية", "🎭")
-local WorldPage = CreateTab("العالم والطقس", "🌐")
-local ServerPage = CreateTab("أدوات السيرفر", "💻")
 
 Pages["أدوات الأدمن"].Page.Visible = true
 Pages["أدوات الأدمن"].Btn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
@@ -257,55 +265,52 @@ local function GetPlayer(name)
     return nil
 end
 
--- === 1. أدوات الأدمن (Admin Commands) ===
+-- === 1. أدوات الأدمن ===
 AddInput(AdminPage, "اكتب اسم اللاعب المستهدف...", function(txt) targetPlayer = txt end)
-AddButton(AdminPage, "1. 🚀 الانتقال إلى اللاعب (Goto)", function()
+AddButton(AdminPage, "🚀 الانتقال إلى اللاعب (Goto)", function()
     local target = GetPlayer(targetPlayer)
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
         LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
     end
 end)
-AddButton(AdminPage, "2. 💀 إعادة ظهور (Reset)", function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.Health = 0 end end)
-local Frozen = false
-AddButton(AdminPage, "3. ❄️ تجميد / إلغاء تجميد (Freeze)", function()
-    Frozen = not Frozen
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then LocalPlayer.Character.HumanoidRootPart.Anchored = Frozen end
-end)
-AddButton(AdminPage, "4. 👻 الاختفاء (Invisibility)", function()
-    if LocalPlayer.Character then for _, v in pairs(LocalPlayer.Character:GetDescendants()) do if v:IsA("BasePart") or v:IsA("Decal") then v.Transparency = 1 end end end
-end)
-AddButton(AdminPage, "5. ✨ الإظهار (Visible)", function()
-    if LocalPlayer.Character then for _, v in pairs(LocalPlayer.Character:GetDescendants()) do if v:IsA("BasePart") or v:IsA("Decal") then v.Transparency = 0 end end end
-end)
-AddButton(AdminPage, "6. 🛡️ درع الحماية (God Mode)", function()
+AddButton(AdminPage, "💀 إعادة ظهور (Reset)", function()
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid.MaxHealth = math.huge
-        LocalPlayer.Character.Humanoid.Health = math.huge
+        LocalPlayer.Character.Humanoid.Health = 0
     end
 end)
-AddButton(AdminPage, "7. 🧲 مراقبة اللاعب (Spectate)", function()
-    local target = GetPlayer(targetPlayer)
-    if target and target.Character and target.Character:FindFirstChild("Humanoid") then
-        workspace.CurrentCamera.CameraSubject = target.Character.Humanoid
-    end
-end)
-AddButton(AdminPage, "8. ❌ إلغاء المراقبة (Unspectate)", function()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
-    end
-end)
-AddButton(AdminPage, "9. 🔄 تنظيف الأنيميشن (Clear Anims)", function()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        for _, track in pairs(LocalPlayer.Character.Humanoid:GetPlayingAnimationTracks()) do track:Stop() end
-    end
-end)
-AddButton(AdminPage, "10. 🧹 إزالة الأدوات من الحقيبة (Clear Backpack)", function() LocalPlayer.Backpack:ClearAllChildren() end)
 
--- === 2. الحركة والطيران (Movement Commands) ===
+-- === 2. التحكم بالسرعة المباشر والقفز ===
+AddInput(MovePage, "⚡ حدد السرعة (اكتب أي رقم مثل 500)...", function(txt)
+    local speed = tonumber(txt)
+    if speed then
+        task.spawn(function()
+            while task.wait(0.1) do
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                    LocalPlayer.Character.Humanoid.WalkSpeed = speed
+                end
+            end
+        end)
+    end
+end)
+
+AddInput(MovePage, "🚀 حدد قوة القفز (مثل 200)...", function(txt)
+    local jump = tonumber(txt)
+    if jump and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.UseJumpPower = true
+        LocalPlayer.Character.Humanoid.JumpPower = jump
+    end
+end)
+
 local Flying = false
 local FlySpeed = 50
 local FlyConnection = nil
-AddButton(MovePage, "11. 🕊️ تشغيل / إيقاف الطيران (Fly)", function()
+
+AddInput(MovePage, "🕊️ سرعة الطيران (مثل 300)...", function(txt)
+    local s = tonumber(txt)
+    if s then FlySpeed = s end
+end)
+
+AddButton(MovePage, "🕊️ تشغيل / إيقاف الطيران (Fly)", function()
     Flying = not Flying
     local Mouse = LocalPlayer:GetMouse()
     if Flying then
@@ -319,6 +324,7 @@ AddButton(MovePage, "11. 🕊️ تشغيل / إيقاف الطيران (Fly)", 
         BV.velocity = Vector3.new(0, 0.1, 0)
         BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
         LocalPlayer.Character.Humanoid.PlatformStand = true
+        
         FlyConnection = RunService.RenderStepped:Connect(function()
             if Flying and T and LocalPlayer.Character:FindFirstChild("Humanoid") then
                 BV.velocity = Mouse.Hit.lookVector * FlySpeed
@@ -326,52 +332,62 @@ AddButton(MovePage, "11. 🕊️ تشغيل / إيقاف الطيران (Fly)", 
             else
                 if FlyConnection then FlyConnection:Disconnect() end
                 BG:Destroy() BV:Destroy()
-                if LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.PlatformStand = false end
+                if LocalPlayer.Character:FindFirstChild("Humanoid") then
+                    LocalPlayer.Character.Humanoid.PlatformStand = false
+                end
             end
         end)
     else
         if FlyConnection then FlyConnection:Disconnect() end
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.PlatformStand = false end
-    end
-end)
-AddInput(MovePage, "12. سرعة الطيران (الافتراضي: 50)...", function(txt) local n = tonumber(txt) if n then FlySpeed = n end end)
-AddInput(MovePage, "13. سرعة المشي (WalkSpeed)...", function(txt) local n = tonumber(txt) if n then LocalPlayer.Character.Humanoid.WalkSpeed = n end end)
-AddInput(MovePage, "14. قوة القفز (JumpPower)...", function(txt) local n = tonumber(txt) if n then LocalPlayer.Character.Humanoid.UseJumpPower = true LocalPlayer.Character.Humanoid.JumpPower = n end end)
-AddInput(MovePage, "15. قوة الجاذبية (Gravity)...", function(txt) local n = tonumber(txt) if n then workspace.Gravity = n end end)
-local InfJump = false
-AddButton(MovePage, "16. 🔄 القفز اللانهائي (Infinite Jump)", function() InfJump = not InfJump end)
-UserInputService.JumpRequest:Connect(function() if InfJump then pcall(function() LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping") end) end end)
-AddButton(MovePage, "17. ⚡ السرعة الخارقة (Speed 100)", function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.WalkSpeed = 100 end end)
-AddButton(MovePage, "18. 🚀 القفز العالي (Jump 150)", function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.UseJumpPower = true LocalPlayer.Character.Humanoid.JumpPower = 150 end end)
-AddButton(MovePage, "19. 🛑 إعادة الحركة للافتراضي (Reset Speed/Jump)", function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.WalkSpeed = 16 LocalPlayer.Character.Humanoid.JumpPower = 50 workspace.Gravity = 196.2 end end)
-AddButton(MovePage, "20. 🪜 التسلق اللانهائي (Infinite Climb)", function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.ClimbSpeed = 100 end end)
-
--- === 3. الكشف والرؤية (Visual Commands) ===
-local Noclip = false
-AddButton(VisualPage, "21. 👻 اختراق الجدران (Noclip)", function() Noclip = not Noclip end)
-RunService.Stepped:Connect(function() if Noclip and LocalPlayer.Character then for _, part in pairs(LocalPlayer.Character:GetChildren()) do if part:IsA("BasePart") then part.CanCollide = false end end end end)
-AddButton(VisualPage, "22. 🎯 كشف أماكن اللاعبين (ESP Highlight)", function()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and not player.Character:FindFirstChild("Highlight") then
-            local Highlight = Instance.new("Highlight") Highlight.Parent = player.Character Highlight.FillColor = Color3.fromRGB(255, 215, 0)
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid.PlatformStand = false
         end
     end
 end)
-AddButton(VisualPage, "23. 🗑️ إزالة الكشف (Remove ESP)", function()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Character and player.Character:FindFirstChild("Highlight") then player.Character.Highlight:Destroy() end
+
+local InfJump = false
+AddButton(MovePage, "🔄 القفز اللانهائي (Infinite Jump)", function() InfJump = not InfJump end)
+UserInputService.JumpRequest:Connect(function()
+    if InfJump then pcall(function() LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping") end) end
+end)
+
+AddButton(MovePage, "🛑 إعادة السرعة والقفز للافتراضي", function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        LocalPlayer.Character.Humanoid.JumpPower = 50
     end
 end)
-AddButton(VisualPage, "24. 💡 إضاءة الماب (Fullbright)", function() Lighting.Brightness = 2 Lighting.ClockTime = 14 Lighting.FogEnd = 100000 Lighting.GlobalShadows = false end)
-AddButton(VisualPage, "25. 🔍 رؤية الأشياء الشفافة (X-Ray Vision)", function() for _, obj in pairs(workspace:GetDescendants()) do if obj:IsA("BasePart") and not obj:IsDescendantOf(LocalPlayer.Character) then obj.LocalTransparencyModifier = 0.5 end end end)
-AddButton(VisualPage, "26. ❌ إيقاف X-Ray Vision", function() for _, obj in pairs(workspace:GetDescendants()) do if obj:IsA("BasePart") then obj.LocalTransparencyModifier = 0 end end end)
-AddButton(VisualPage, "27. 📸 توسيع مدى الكاميرا (Max Zoom Out)", function() LocalPlayer.CameraMaxZoomDistance = 10000 end)
-AddButton(VisualPage, "28. 🎯 إعادة الكاميرا للافتراضي (Reset Zoom)", function() LocalPlayer.CameraMaxZoomDistance = 128 end)
-AddButton(VisualPage, "29. 🌫️ إزالة الضباب (Remove Fog)", function() Lighting.FogEnd = 9e9 end)
-AddButton(VisualPage, "30. ☀️ رؤية نهائية (Max Lightness)", function() Lighting.Ambient = Color3.fromRGB(255, 255, 255) end)
 
--- === 4. تعديل الشخصية (Character Mods) ===
-AddInput(FunPage, "31. حجم الشخصية (Scale 1-5)...", function(txt)
+-- === 3. الكشف والرؤية ===
+local Noclip = false
+AddButton(VisualPage, "👻 اختراق الجدران (Noclip)", function() Noclip = not Noclip end)
+RunService.Stepped:Connect(function()
+    if Noclip and LocalPlayer.Character then
+        for _, part in pairs(LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") then part.CanCollide = false end
+        end
+    end
+end)
+
+AddButton(VisualPage, "🎯 كشف أماكن اللاعبين (ESP Highlight)", function()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and not player.Character:FindFirstChild("Highlight") then
+            local Highlight = Instance.new("Highlight")
+            Highlight.Parent = player.Character
+            Highlight.FillColor = Color3.fromRGB(255, 215, 0)
+        end
+    end
+end)
+
+AddButton(VisualPage, "💡 إضاءة الماب (Fullbright)", function()
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 100000
+    Lighting.GlobalShadows = false
+end)
+
+-- === 4. تعديل الشخصية ===
+AddInput(FunPage, "🛠️ حجم الشخصية (1-5)...", function(txt)
     local scale = tonumber(txt)
     if scale and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         local hum = LocalPlayer.Character.Humanoid
@@ -382,54 +398,25 @@ AddInput(FunPage, "31. حجم الشخصية (Scale 1-5)...", function(txt)
         end)
     end
 end)
-AddInput(FunPage, "32. نسخ سكن أي لاعب باسمه...", function(txt)
-    pcall(function()
-        local userId = Players:GetUserIdFromNameAsync(txt)
-        if userId then LocalPlayer.Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(userId)) end
-    end)
-end)
-AddButton(FunPage, "33. 🛠️ الحصول على Btools", function() for i = 1, 4 do local t = Instance.new("HopperBin") t.BinType = i t.Parent = LocalPlayer.Backpack end end)
-AddButton(FunPage, "34. 👑 إزالة الملابس (Remove Clothes)", function() if LocalPlayer.Character then for _, v in pairs(LocalPlayer.Character:GetChildren()) do if v:IsA("Clothing") or v:IsA("ShirtGraphic") then v:Destroy() end end end end)
-AddButton(FunPage, "35. 🧢 إزالة الاكسسوارات (Remove Accessories)", function() if LocalPlayer.Character then for _, v in pairs(LocalPlayer.Character:GetChildren()) do if v:IsA("Accessory") then v:Destroy() end end end end)
-AddButton(FunPage, "36. 🗿 إزالة الوجه (Remove Face)", function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") and LocalPlayer.Character.Head:FindFirstChild("face") then LocalPlayer.Character.Head.face:Destroy() end end)
-AddButton(FunPage, "37. 🏃 أنيميشن طيران R15 (Fly Anim)", function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Swimming) end end)
-AddButton(FunPage, "38. 💃 الرقص تلقائياً (Emote Dance)", function() game:GetService("Players"):Chat("/e dance") end)
-AddButton(FunPage, "39. 🕺 الرقص الثاني (Emote Dance 2)", function() game:GetService("Players"):Chat("/e dance2") end)
-AddButton(FunPage, "40. 🤸 الحركة البهلوانية (Emote Cheer)", function() game:GetService("Players"):Chat("/e cheer") end)
 
--- === 5. العالم والطقس (World & Lighting) ===
-AddButton(WorldPage, "41. ☀️ جعل الوقت نهار (Day)", function() Lighting.ClockTime = 14 end)
-AddButton(WorldPage, "42. 🌙 جعل الوقت ليل (Night)", function() Lighting.ClockTime = 0 end)
-AddButton(WorldPage, "43. 🌅 جعل الوقت غروب (Sunset)", function() Lighting.ClockTime = 18 end)
-AddButton(WorldPage, "44. 🌌 إضافة السماء الساحرة (Purple Sky)", function()
-    local sky = Lighting:FindFirstChildOfClass("Sky") or Instance.new("Sky", Lighting)
-    sky.SkyboxBk = "rbxassetid://271042516" sky.SkyboxDn = "rbxassetid://271041817" sky.SkyboxFt = "rbxassetid://271042310" sky.SkyboxLf = "rbxassetid://271042310" sky.SkyboxRt = "rbxassetid://271042310" sky.SkyboxUp = "rbxassetid://271041817"
+AddButton(FunPage, "🛠️ الحصول على أدوات البناء (Btools)", function()
+    for i = 1, 4 do
+        local t = Instance.new("HopperBin")
+        t.BinType = i
+        t.Parent = LocalPlayer.Backpack
+    end
 end)
-AddButton(WorldPage, "45. ❄️ جو ثلجي وخفيف (Snow Lighting)", function() Lighting.ColorShift_Top = Color3.fromRGB(200, 220, 255) end)
-AddButton(WorldPage, "46. 🌧️ إزالة الظلال (No Shadows)", function() Lighting.GlobalShadows = false end)
-AddButton(WorldPage, "47. ⚡ زيادة السطوع (Max Brightness)", function() Lighting.Brightness = 10 end)
-AddButton(WorldPage, "48. 🔮 تفعيل جودة الألوان (Bloom Vision)", function() local b = Instance.new("BloomEffect", Lighting) b.Intensity = 1 b.Size = 24 end)
 
--- === 6. أدوات السيرفر والمعلومات (Server Tools) ===
-AddButton(ServerPage, "49. 📊 عرض سرعة الاتصال (Ping)", function()
-    local p = Instance.new("Hint", workspace) p.Text = "Ping: " .. math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()) .. " ms" task.wait(3) p:Destroy()
-end)
-AddButton(ServerPage, "50. 👥 عرض عدد اللاعبين بالسيرفر", function()
-    local h = Instance.new("Hint", workspace) h.Text = "عدد اللاعبين الحالي: " .. #Players:GetPlayers() task.wait(3) h:Destroy()
-end)
-AddButton(ServerPage, "51. 🔄 إعادة الاتصال بالسيرفر (Rejoin)", function() game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer) end)
-AddButton(ServerPage, "52. 🚪 مغادرة السيرفر (Server Hop)", function() game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer) end)
-
--- ==================== 4. تشغيل انيميشن البداية ====================
+-- ==================== 4. تشغيل التحميل بوضوح ====================
 task.spawn(function()
-    TweenService:Create(IntroTitle, TweenInfo.new(1.2), {TextTransparency = 0}):Play()
-    TweenService:Create(IntroSub, TweenInfo.new(1.2), {TextTransparency = 0}):Play()
+    TweenService:Create(IntroTitle, TweenInfo.new(1), {TextTransparency = 0}):Play()
+    TweenService:Create(IntroUser, TweenInfo.new(1), {TextTransparency = 0}):Play()
     task.wait(2.2)
 
-    TweenService:Create(IntroTitle, TweenInfo.new(0.8), {TextTransparency = 1}):Play()
-    TweenService:Create(IntroSub, TweenInfo.new(0.8), {TextTransparency = 1}):Play()
-    TweenService:Create(IntroFrame, TweenInfo.new(0.8), {BackgroundTransparency = 1}):Play()
-    task.wait(0.8)
+    TweenService:Create(IntroTitle, TweenInfo.new(0.6), {TextTransparency = 1}):Play()
+    TweenService:Create(IntroUser, TweenInfo.new(0.6), {TextTransparency = 1}):Play()
+    TweenService:Create(IntroFrame, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
+    task.wait(0.6)
 
     IntroFrame:Destroy()
     MainFrame.Visible = true
