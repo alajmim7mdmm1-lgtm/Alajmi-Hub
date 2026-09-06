@@ -1,3 +1,4 @@
+-- تحميل مكتبة Fluent
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
 local Window = Fluent:CreateWindow({
@@ -9,11 +10,11 @@ local Window = Fluent:CreateWindow({
 })
 
 local Tabs = {
-    Main = Window:AddTab({ Title = "اللاعب والحركة 🏃‍♂️", Icon = "" }),
-    Skin = Window:AddTab({ Title = "تغيير السكن والاسم 🎭", Icon = "" }),
-    Visuals = Window:AddTab({ Title = "الكشف والرادار 👁️", Icon = "" }),
-    World = Window:AddTab({ Title = "العالم والبيئة 🌐", Icon = "" }),
-    Fun = Window:AddTab({ Title = "أوامر إضافية 🎯", Icon = "" })
+    Main = Window:AddTab({ Title = "اللاعب والحركة 🏃‍♂️" }),
+    Skin = Window:AddTab({ Title = "تغيير السكن والاسم 🎭" }),
+    Visuals = Window:AddTab({ Title = "الكشف والرادار 👁️" }),
+    World = Window:AddTab({ Title = "العالم والبيئة 🌐" }),
+    Fun = Window:AddTab({ Title = "أوامر إضافية 🎯" })
 }
 
 -- ==================== 1. تبويب اللاعب والحركة ====================
@@ -49,7 +50,7 @@ Tabs.Main:AddToggle("InfJump", {
     Callback = function(Value) InfJump = Value end
 })
 game:GetService("UserInputService").JumpRequest:Connect(function()
-    if InfJump then game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping") end
+    if InfJump then pcall(function() game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping") end) end
 end)
 
 -- ==================== 2. تبويب تغيير السكن والاسم ====================
@@ -108,7 +109,7 @@ Tabs.Skin:AddButton({
 })
 
 Tabs.Skin:AddButton({
-    Title = "إعادة السكن والأبعاد للأصل",
+    Title = "إعادة السكن للأصل",
     Callback = function()
         pcall(function()
             local localPlayer = game.Players.LocalPlayer
@@ -161,4 +162,4 @@ Tabs.Fun:AddButton({ Title = "إعادة ترسبن الشخصية (Reset)", Cal
 Tabs.Fun:AddButton({ Title = "تكبير زاوية الرؤية (Max FOV)", Callback = function() game.Workspace.CurrentCamera.FieldOfView = 120 end })
 Tabs.Fun:AddButton({ Title = "إعادة زاوية الرؤية للأصل (Normal FOV)", Callback = function() game.Workspace.CurrentCamera.FieldOfView = 70 end })
 
-Fluent:Notify({ Title = "Alajmi Hub v3.0", Content = "تم تحميل السكربت المطور بالأوامر الجديدة!", Duration = 4 })
+Fluent:Notify({ Title = "Alajmi Hub v3.0", Content = "تم تحميل السكربت بنجاح!", Duration = 4 })
