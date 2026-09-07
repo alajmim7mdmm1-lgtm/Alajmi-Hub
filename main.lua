@@ -1,4 +1,4 @@
--- ==================== M7M HUB v30.0 | FULL COMMANDS INCLUDED ====================
+-- ==================== M7M HUB v30.0 | NO BLACK BACKGROUND FIX ====================
 local TOGGLE_ICON_ID = "6031097225" 
 local DISCORD_INVITE = "https://discord.gg/ZWWuxWkvq"
 
@@ -9,10 +9,14 @@ local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService("Workspace")
 local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
+
+-- إزالة أي تأثير ضباب قديم في اللعبة
+for _, v in pairs(Lighting:GetChildren()) do
+    if v:IsA("BlurEffect") then v:Destroy() end
+end
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "M7MHubV30"
@@ -22,10 +26,11 @@ if not success then ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
 
 local CurrentLang = "AR"
 
--- ==================== 1. شاشة اختيار اللغة (بدون خلفية سوداء) ====================
+-- ==================== 1. شاشة اختيار اللغة (شفافة تماماً) ====================
 local LangFrame = Instance.new("Frame", ScreenGui)
 LangFrame.Size = UDim2.new(1, 0, 1, 0)
-LangFrame.BackgroundTransparency = 1
+LangFrame.BackgroundTransparency = 1 -- شفافية كاملة
+LangFrame.BorderSizePixel = 0
 LangFrame.ZIndex = 600
 
 local LangBox = Instance.new("Frame", LangFrame)
@@ -74,8 +79,7 @@ NotifyContainer.Position = UDim2.new(1, -260, 0, 20)
 NotifyContainer.BackgroundTransparency = 1
 NotifyContainer.Parent = ScreenGui
 
-local NotifyLayout = Instance.new("UIListLayout")
-NotifyLayout.Parent = NotifyContainer
+local NotifyLayout = Instance.new("UIListLayout", NotifyContainer)
 NotifyLayout.SortOrder = Enum.SortOrder.LayoutOrder
 NotifyLayout.Padding = UDim.new(0, 8)
 
@@ -295,7 +299,7 @@ local VisualPage = CreateTab("الرؤية والـ ESP", "Visuals & ESP", "👁
 local PlayerPage = CreateTab("خيارات اللاعب", "Player Settings", "👤")
 local ServerPage = CreateTab("السيرفر والنظام", "Server & System", "🌐")
 
--- ==================== 1. أومـار الحركة والفيزياء ====================
+-- ==================== الأوامـار ====================
 local FlySpeed = 50
 local Flying = false
 local FlyBodyVel, FlyBodyGyro
@@ -363,7 +367,6 @@ AddButton(MovePage, "🚀 قفز لانهائي (Infinite Jump)", "🚀 Infinite
     end)
 end)
 
--- ==================== 2. أومـار الرؤية والـ ESP ====================
 local ESP_Active = false
 AddButton(VisualPage, "👁️ تفعيل كاشف اللاعبين (ESP Box)", "👁️ Toggle Player ESP", function()
     ESP_Active = not ESP_Active
@@ -390,7 +393,6 @@ AddButton(VisualPage, "☀️ إزالة الضباب ورؤية واضحة (Ful
     Lighting.ColorShift_Top = Color3.new(1, 1, 1)
 end)
 
--- ==================== 3. أومـار اللاعب والنظام ====================
 AddButton(PlayerPage, "❤️ إعادة تعيين الشخصية (Reset)", "❤️ Reset Character", function()
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.Health = 0
@@ -401,7 +403,6 @@ AddButton(PlayerPage, "📷 تغيير زاوية الرؤية (FOV 120)", "📷
     Camera.FieldOfView = 120
 end)
 
--- ==================== 4. قسم السيرفر والروابط ====================
 AddButton(ServerPage, "🔗 نسخ رابط سيرفر M7M (Discord)", "🔗 Copy M7M Discord Link", function()
     if setclipboard then
         setclipboard(DISCORD_INVITE)
