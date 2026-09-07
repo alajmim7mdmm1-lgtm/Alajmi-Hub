@@ -1,5 +1,4 @@
--- ==================== M7M HUB v30.0 | FULL SYSTEM ====================
-local INTRO_IMAGE_ID = "10042431086" 
+-- ==================== M7M HUB v30.0 | FULL COMMANDS INCLUDED ====================
 local TOGGLE_ICON_ID = "6031097225" 
 local DISCORD_INVITE = "https://discord.gg/ZWWuxWkvq"
 
@@ -23,10 +22,10 @@ if not success then ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
 
 local CurrentLang = "AR"
 
--- ==================== 1. شاشة اختيار اللغة ====================
+-- ==================== 1. شاشة اختيار اللغة (بدون خلفية سوداء) ====================
 local LangFrame = Instance.new("Frame", ScreenGui)
 LangFrame.Size = UDim2.new(1, 0, 1, 0)
-LangFrame.BackgroundColor3 = Color3.fromRGB(8, 10, 15)
+LangFrame.BackgroundTransparency = 1
 LangFrame.ZIndex = 600
 
 local LangBox = Instance.new("Frame", LangFrame)
@@ -154,18 +153,6 @@ TitleLabel.TextSize = 14
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-local SearchBox = Instance.new("TextBox", TopBar)
-SearchBox.Size = UDim2.new(0, 220, 0, 30)
-SearchBox.Position = UDim2.new(1, -330, 0, 10)
-SearchBox.BackgroundColor3 = Color3.fromRGB(26, 32, 48)
-SearchBox.PlaceholderText = "🔍 Search / بحث..."
-SearchBox.Text = ""
-SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-SearchBox.Font = Enum.Font.Gotham
-SearchBox.TextSize = 11
-Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0, 6)
-
--- زر تصغير الشاشة (-)
 local MinimizeBtn = Instance.new("TextButton", TopBar)
 MinimizeBtn.Position = UDim2.new(1, -70, 0, 12)
 MinimizeBtn.Size = UDim2.new(0, 26, 0, 26)
@@ -176,7 +163,6 @@ MinimizeBtn.Font = Enum.Font.GothamBold
 MinimizeBtn.TextSize = 16
 Instance.new("UICorner", MinimizeBtn).CornerRadius = UDim.new(1, 0)
 
--- زر إغلاق السكربت تماماً (✕)
 local CloseBtn = Instance.new("TextButton", TopBar)
 CloseBtn.Position = UDim2.new(1, -35, 0, 12)
 CloseBtn.Size = UDim2.new(0, 26, 0, 26)
@@ -262,18 +248,9 @@ local ToggleStroke = Instance.new("UIStroke", ToggleBtn)
 ToggleStroke.Thickness = 1.5
 ToggleStroke.Color = Color3.fromRGB(255, 215, 0)
 
--- ربط الأزرار بالوظائف
 ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
-
--- وظيفة زر التصغير (-)
-MinimizeBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
-end)
-
--- وظيفة زر الإغلاق النهائي (✕)
-CloseBtn.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
-end)
+MinimizeBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false end)
+CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
 local function AddButton(parent, textAr, textEn, callback)
     local Btn = Instance.new("TextButton", parent)
@@ -312,11 +289,119 @@ local function AddInput(parent, placeholderAr, placeholderEn, callback)
     return Box
 end
 
--- ==================== الأقسام والزر المدمج ====================
-local MovePage = CreateTab("الحركة والطيران", "Movement & Fly", "⚡")
+-- ==================== إنشـاء الأقسـام ====================
+local MovePage = CreateTab("الحركة والفيزياء", "Movement & Physics", "⚡")
+local VisualPage = CreateTab("الرؤية والـ ESP", "Visuals & ESP", "👁️")
+local PlayerPage = CreateTab("خيارات اللاعب", "Player Settings", "👤")
 local ServerPage = CreateTab("السيرفر والنظام", "Server & System", "🌐")
 
--- زر نسخ الديسكورد
+-- ==================== 1. أومـار الحركة والفيزياء ====================
+local FlySpeed = 50
+local Flying = false
+local FlyBodyVel, FlyBodyGyro
+
+AddButton(MovePage, "🕊️ تفعيل/إلغاء الطيران (Fly)", "🕊️ Toggle Fly", function()
+    Flying = not Flying
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if Flying and hrp then
+        FlyBodyVel = Instance.new("BodyVelocity", hrp)
+        FlyBodyVel.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+        FlyBodyGyro = Instance.new("BodyGyro", hrp)
+        FlyBodyGyro.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
+        
+        task.spawn(function()
+            while Flying and hrp and hrp.Parent do
+                FlyBodyVel.Velocity = Camera.CFrame.LookVector * FlySpeed
+                FlyBodyGyro.CFrame = Camera.CFrame
+                RunService.RenderStepped:Wait()
+            end
+            if FlyBodyVel then FlyBodyVel:Destroy() end
+            if FlyBodyGyro then FlyBodyGyro:Destroy() end
+        end)
+    end
+end)
+
+AddInput(MovePage, "سرعة الطيران (مثال: 100)", "Fly Speed (e.g. 100)", function(val)
+    FlySpeed = tonumber(val) or 50
+end)
+
+AddButton(MovePage, "🏃‍♂️ السرعة الفائقة (Speed 100)", "🏃‍♂️ Speed 100", function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = 100
+    end
+end)
+
+AddButton(MovePage, "🔄 إعادة السرعة الأصلية (Speed 16)", "🔄 Reset Speed (16)", function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = 16
+    end
+end)
+
+AddButton(MovePage, "🦘 القفز العالي (Jump Power 120)", "🦘 Jump Power 120", function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.UseJumpPower = true
+        LocalPlayer.Character.Humanoid.JumpPower = 120
+    end
+end)
+
+AddButton(MovePage, "👻 اختراق الجدران (Noclip)", "👻 Noclip Mode", function()
+    RunService.Stepped:Connect(function()
+        if LocalPlayer.Character then
+            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
+            end
+        end
+    end)
+end)
+
+AddButton(MovePage, "🚀 قفز لانهائي (Infinite Jump)", "🚀 Infinite Jump", function()
+    UserInputService.JumpRequest:Connect(function()
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+        end
+    end)
+end)
+
+-- ==================== 2. أومـار الرؤية والـ ESP ====================
+local ESP_Active = false
+AddButton(VisualPage, "👁️ تفعيل كاشف اللاعبين (ESP Box)", "👁️ Toggle Player ESP", function()
+    ESP_Active = not ESP_Active
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            if ESP_Active then
+                local Highlight = Instance.new("Highlight")
+                Highlight.Name = "M7M_ESP"
+                Highlight.FillColor = Color3.fromRGB(255, 215, 0)
+                Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                Highlight.Parent = p.Character
+            else
+                if p.Character:FindFirstChild("M7M_ESP") then
+                    p.Character.M7M_ESP:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+AddButton(VisualPage, "☀️ إزالة الضباب ورؤية واضحة (Fullbright)", "☀️ Fullbright Mode", function()
+    Lighting.Ambient = Color3.new(1, 1, 1)
+    Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
+    Lighting.ColorShift_Top = Color3.new(1, 1, 1)
+end)
+
+-- ==================== 3. أومـار اللاعب والنظام ====================
+AddButton(PlayerPage, "❤️ إعادة تعيين الشخصية (Reset)", "❤️ Reset Character", function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.Health = 0
+    end
+end)
+
+AddButton(PlayerPage, "📷 تغيير زاوية الرؤية (FOV 120)", "📷 Set FOV 120", function()
+    Camera.FieldOfView = 120
+end)
+
+-- ==================== 4. قسم السيرفر والروابط ====================
 AddButton(ServerPage, "🔗 نسخ رابط سيرفر M7M (Discord)", "🔗 Copy M7M Discord Link", function()
     if setclipboard then
         setclipboard(DISCORD_INVITE)
@@ -326,6 +411,10 @@ AddButton(ServerPage, "🔗 نسخ رابط سيرفر M7M (Discord)", "🔗 Cop
         local msg = (CurrentLang == "AR") and "مُنفذ السكربت لا يدعم النسخ التلقائي" or "Executor does not support setclipboard"
         Notify("M7M HUB", msg, 3)
     end
+end)
+
+AddButton(ServerPage, "🔄 إعادة الاتصال بالسيرفر (Rejoin)", "🔄 Rejoin Server", function()
+    TeleportService:Teleport(game.PlaceId, LocalPlayer)
 end)
 
 -- ==================== بدء التشغيل ====================
@@ -344,11 +433,11 @@ local function StartScript(lang)
     MainFrame.Visible = true
     ToggleBtn.Visible = true
 
-    Pages["الحركة والطيران"].Page.Visible = true
-    Pages["الحركة والطيران"].Btn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-    Pages["الحركة والطيران"].Btn.TextColor3 = Color3.fromRGB(10, 12, 18)
+    Pages["الحركة والفيزياء"].Page.Visible = true
+    Pages["الحركة والفيزياء"].Btn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+    Pages["الحركة والفيزياء"].Btn.TextColor3 = Color3.fromRGB(10, 12, 18)
 
-    local welcomeMsg = (CurrentLang == "AR") and "تم اختيار اللغة العربية بنجاح!" or "English language selected!"
+    local welcomeMsg = (CurrentLang == "AR") and "تم تحميل الأوامر بنجاح!" or "Commands loaded successfully!"
     Notify("M7M HUB", welcomeMsg, 3)
 end
 
